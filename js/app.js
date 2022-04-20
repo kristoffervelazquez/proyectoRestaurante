@@ -27,8 +27,8 @@ function guardarCliente() {
     }
 
     // Asignar datos del formulario al cliente
-    cliente = {...cliente, mesa, hora};
-    
+    cliente = { ...cliente, mesa, hora };
+
     // Ocultar modal
     const modalFormulario = document.querySelector('#formulario');
     const modalBootstrap = bootstrap.Modal.getInstance(modalFormulario);
@@ -41,7 +41,7 @@ function guardarCliente() {
     obtenerPlatillos();
 }
 
-function mostrarSecciones(){
+function mostrarSecciones() {
     const seccionesOcultas = document.querySelectorAll('.d-none');
 
     seccionesOcultas.forEach(seccion => {
@@ -49,7 +49,7 @@ function mostrarSecciones(){
     })
 }
 
-function obtenerPlatillos(){
+function obtenerPlatillos() {
     const url = 'http://localhost:4000/platillos';
 
     fetch(url)
@@ -58,14 +58,14 @@ function obtenerPlatillos(){
         .catch(err => console.error(err))
 }
 
-function mostrarPlatillos(platillos){
+function mostrarPlatillos(platillos) {
     const contenido = document.querySelector('#platillos');
     platillos.forEach(platillo => {
-        const {categoria, id, nombre, precio} = platillo;
+        const { categoria, id, nombre, precio } = platillo;
 
         const row = document.createElement('div');
         row.classList.add('row', 'py-3', 'border-top');
-        
+
         const divNombre = document.createElement('div');
         divNombre.classList.add('col-md-4')
         divNombre.textContent = nombre;
@@ -85,20 +85,39 @@ function mostrarPlatillos(platillos){
         inputCantidad.id = `Producto-${id}`;
         inputCantidad.classList.add('form-control');
 
+        // Función que detecta la cantidad y el platillo que se está agregando
+        inputCantidad.onchange = () => {
+            const cantidad = parseInt(inputCantidad.value);
+            // Spread para juntar todo en un objeto
+            agregarPlatillo({...platillo, cantidad});
+        };
+
         const agregar = document.createElement('div');
         agregar.classList.add('col-md-2');
         agregar.appendChild(inputCantidad);
-        
+
         row.appendChild(divNombre);
         row.appendChild(divPrecio);
         row.appendChild(divCategoria);
         row.appendChild(agregar);
 
         contenido.appendChild(row);
-        
+
     })
 }
 
+
+
+function agregarPlatillo(producto) {
+    // Revisar que la cantidad sea mayor a cero
+    let {pedido} = cliente
+    if(producto.cantidad > 0){
+        cliente.pedido = [...pedido, producto]
+    }else{
+        console.log('es 0');
+    }
+    console.log(cliente.pedido);
+}
 
 function imprimirAlerta(mensaje) {
     const existeAlerta = document.querySelector('.invalid-feedback')
